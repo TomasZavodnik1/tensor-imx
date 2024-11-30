@@ -415,74 +415,6 @@ config_setting(
 # "darwin_x86_64". The former shows up when building on a Mac x86_64 host for a Mac x86_64 target.
 # The latter shows up when cross-compiling for Mac x86_64 from a Mac ARM machine and in internal
 # Google builds.
-config_setting(
-    name = "macos_x86_64_default",
-    flag_values = if_google(
-        {"//tools/cpp:cc_target_os": "apple"},
-        {},
-    ),
-    values = {
-        "apple_platform_type": "macos",
-        "cpu": "darwin",
-    },
-)
-
-config_setting(
-    name = "macos_x86_64_crosscompile",
-    flag_values = if_google(
-        {"//tools/cpp:cc_target_os": "apple"},
-        {},
-    ),
-    values = {
-        "apple_platform_type": "macos",
-        "cpu": "darwin_x86_64",
-    },
-)
-
-selects.config_setting_group(
-    name = "macos_x86_64",
-    match_any = [
-        ":macos_x86_64_default",
-        ":macos_x86_64_crosscompile",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-config_setting(
-    name = "macos_arm64",
-    flag_values = if_google(
-        {"//tools/cpp:cc_target_os": "apple"},
-        {},
-    ),
-    values = {
-        "apple_platform_type": "macos",
-        "cpu": "darwin_arm64",
-    },
-    visibility = ["//visibility:public"],
-)
-
-# TODO(jakeharmon): Remove in favor of TSL version
-selects.config_setting_group(
-    name = "macos",
-    match_any = [
-        ":macos_x86_64",
-        ":macos_arm64",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-config_setting(
-    name = "ios",
-    flag_values = if_google(
-        {"//tools/cpp:cc_target_os": "apple"},
-        {},
-    ),
-    values = if_oss(
-        {"apple_platform_type": "ios"},
-        {},
-    ),
-    visibility = ["//visibility:public"],
-)
 
 # TODO(jakeharmon): Remove in favor of TSL version
 config_setting(
@@ -511,20 +443,6 @@ config_setting(
     visibility = ["//visibility:public"],
 )
 
-config_setting(
-    name = "ios_x86_64",
-    flag_values = if_google(
-        {"//tools/cpp:cc_target_os": "apple"},
-        {},
-    ),
-    values = dict(
-        if_oss(
-            {"crosstool_top": "//tools/osx/crosstool:crosstool"},
-        ),
-        cpu = "ios_x86_64",
-    ),
-    visibility = ["//visibility:public"],
-)
 
 config_setting(
     name = "chromiumos",
@@ -906,7 +824,6 @@ selects.config_setting_group(
         # TODO(jakeharmon): Move all platform configs to TSL with fuchsia (non-blocking)
         ":fuchsia",
         ":emscripten",
-        ":ios",
         ":elinux"
     ],
     visibility = ["//visibility:public"],
