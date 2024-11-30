@@ -159,41 +159,7 @@ build:android_x86 --fat_apk_cpu=x86
 build:android_x86_64 --config=android
 build:android_x86_64 --cpu=x86_64
 build:android_x86_64 --fat_apk_cpu=x86_64
-
-# Build everything statically for Android since all static libs are later
-# bundled together into a single .so for deployment.
-build:android --dynamic_mode=off
-
-# Sets the default Apple platform to macOS.
-build:macos --apple_platform_type=macos
-
-# gRPC on MacOS requires this #define
-build:macos --copt=-DGRPC_BAZEL_BUILD
-
-# Avoid hitting command line argument limit
-build:macos --features=archive_param_file
-
-# Settings for MacOS on ARM CPUs.
-build:macos_arm64 --cpu=darwin_arm64
-build:macos_arm64 --macos_minimum_os=11.0
-
-# iOS configs for each architecture and the fat binary builds.
-build:ios --apple_platform_type=ios
-build:ios --apple_bitcode=embedded --copt=-fembed-bitcode
-build:ios --copt=-Wno-c++11-narrowing
-build:ios_armv7 --config=ios
-build:ios_armv7 --cpu=ios_armv7
-build:ios_arm64 --config=ios
-build:ios_arm64 --cpu=ios_arm64
-build:ios_arm64e --config=ios
-build:ios_arm64e --cpu=ios_arm64e
-build:ios_sim_arm64 --config=ios
-build:ios_sim_arm64 --cpu=ios_sim_arm64
-build:ios_x86_64 --config=ios
-build:ios_x86_64 --cpu=ios_x86_64
-build:ios_fat --config=ios
-build:ios_fat --ios_multi_cpus=armv7,arm64,i386,x86_64
-
+@w
 # Config to use a mostly-static build and disable modular op registration
 # support (this will revert to loading TensorFlow with RTLD_GLOBAL in Python).
 # By default, TensorFlow will build with a dependence on
@@ -276,11 +242,10 @@ build:dynamic_kernels --copt=-DAUTOLOAD_DYNAMIC_KERNELS
 
 # Don't trigger --config=<host platform> when cross-compiling.
 build:android --noenable_platform_specific_config
-build:ios --noenable_platform_specific_config
+
 
 # Suppress all C++ compiler warnings, otherwise build logs become 10s of MBs.
 build:android --copt=-w
-build:ios --copt=-w
 build:linux --host_copt=-w
 build:macos --copt=-w
 build:windows --copt=/W0
@@ -345,8 +310,6 @@ build:macos --define=PROTOBUF_INCLUDE_PATH=$(PREFIX)/include
 # By default, build TF in C++ 17 mode.
 build:android --cxxopt=-std=c++17
 build:android --host_cxxopt=-std=c++17
-build:ios --cxxopt=-std=c++17
-build:ios --host_cxxopt=-std=c++17
 build:linux --cxxopt=-std=c++17
 build:linux --host_cxxopt=-std=c++17
 build:macos --cxxopt=-std=c++17
@@ -408,7 +371,6 @@ build:v2 --define=tf_api_version=2 --action_env=TF2_BEHAVIOR=1
 # Disable XLA on mobile.
 build:xla     --define=with_xla_support=true # TODO: remove, it's on by default.
 build:android --define=with_xla_support=false
-build:ios     --define=with_xla_support=false
 
 # BEGIN TF REMOTE BUILD EXECUTION OPTIONS
 # Options when using remote execution
