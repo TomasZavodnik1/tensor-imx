@@ -82,12 +82,6 @@ def tflite_extra_gles_deps():
     """This is a no-op outside of Google."""
     return []
 
-def tflite_ios_lab_runner(version):
-    """This is a no-op outside of Google."""
-
-    # Can switch back to None when https://github.com/bazelbuild/rules_apple/pull/757 is fixed
-    return "@build_bazel_rules_apple//apple/testing/default_runner:ios_default_runner"
-
 def if_nnapi(supported, not_supported = [], supported_android = None):
     if supported_android == None:
         supported_android = supported
