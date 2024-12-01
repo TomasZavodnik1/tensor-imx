@@ -255,10 +255,8 @@ def if_not_android_or_elinux(a):
 def if_android_or_ios(a):
     return select({
         clean_dep("//tensorflow:android"): a,
-        clean_dep("//tensorflow:ios"): a,
         "//conditions:default": [],
     })
-
 def if_emscripten(a):
     return select({
         clean_dep("//tensorflow:emscripten"): a,
@@ -467,7 +465,6 @@ def tf_copts(
         if_enable_acl(["-DXLA_CPU_USE_ACL=1", "-fexceptions"]) +
         if_android_arm(["-mfpu=neon", "-fomit-frame-pointer"]) +
         if_linux_x86_64(["-msse3"]) +
-        if_ios_x86_64(["-msse4.1"]) +
         if_no_default_logger(["-DNO_DEFAULT_LOGGER"]) +
         select({
             clean_dep("//tensorflow:framework_shared_object"): [],
@@ -476,9 +473,7 @@ def tf_copts(
         select({
             clean_dep("//tensorflow:android"): android_copts,
             clean_dep("//tensorflow:emscripten"): [],
-            clean_dep("//tensorflow:macos"): [],
             clean_dep("//tensorflow:windows"): get_win_copts(is_external),
-            clean_dep("//tensorflow:ios"): [],
             clean_dep("//tensorflow:no_lgpl_deps"): ["-D__TENSORFLOW_NO_LGPL_DEPS__", "-pthread"],
             "//conditions:default": ["-pthread"],
         })
@@ -552,12 +547,6 @@ def tf_features_nomodules_if_mobile():
 # portable_tensorflow_lib_lite does not export the headers needed to
 # use it.  Thus anything that depends on it needs to disable layering
 # check.
-def tf_features_nolayering_check_if_ios():
-    return select({
-        clean_dep("//tensorflow:ios"): ["-layering_check"],
-        "//conditions:default": [],
-    })
-
 def tf_opts_nortti_if_lite_protos():
     return tf_portable_full_lite_protos(
         full = [],
@@ -614,10 +603,6 @@ def _rpath_linkopts(name):
     # directory in the tensorflow/ tree.
     levels_to_root = native.package_name().count("/") + name.count("/")
     return select({
-        clean_dep("//tensorflow:macos"): [
-            "-Wl,%s" % (_make_search_paths("@loader_path", levels_to_root),),
-            "-Wl,-rename_section,__TEXT,text_env,__TEXT,__text",
-        ],
         clean_dep("//tensorflow:windows"): [],
         "//conditions:default": [
             "-Wl,%s" % (_make_search_paths("$$ORIGIN", levels_to_root),),
@@ -634,10 +619,6 @@ def _rpath_user_link_flags(name):
     # directory in the tensorflow/ tree.
     levels_to_root = native.package_name().count("/") + name.count("/")
     return select({
-        clean_dep("//tensorflow:macos"): [
-            "-Wl,%s" % (_make_search_paths("@loader_path", levels_to_root),),
-            "-Wl,-rename_section,__TEXT,text_env,__TEXT,__text",
-        ],
         clean_dep("//tensorflow:windows"): [],
         "//conditions:default": [
             "-Wl,%s" % (_make_search_paths("$ORIGIN", levels_to_root),),
@@ -654,9 +635,6 @@ def tf_binary_additional_srcs(fullversion = False):
 
     return if_static(
         extra_deps = [],
-        macos = [
-            clean_dep("//tensorflow:libtensorflow_framework%s.dylib" % suffix),
-        ],
         otherwise = [
             clean_dep("//tensorflow:libtensorflow_framework.so%s" % suffix),
         ],
@@ -665,11 +643,6 @@ def tf_binary_additional_srcs(fullversion = False):
 def tf_binary_additional_data_deps():
     return if_static(
         extra_deps = [],
-        macos = [
-            clean_dep("//tensorflow:libtensorflow_framework.dylib"),
-            clean_dep("//tensorflow:libtensorflow_framework.%s.dylib" % VERSION_MAJOR),
-            clean_dep("//tensorflow:libtensorflow_framework.%s.dylib" % VERSION),
-        ],
         otherwise = [
             clean_dep("//tensorflow:libtensorflow_framework.so"),
             clean_dep("//tensorflow:libtensorflow_framework.so.%s" % VERSION_MAJOR),
@@ -679,11 +652,6 @@ def tf_binary_additional_data_deps():
 
 def tf_binary_pybind_deps():
     return select({
-        clean_dep("//tensorflow:macos"): [
-            clean_dep(
-                "//tensorflow/python:_pywrap_tensorflow_internal_macos",
-            ),
-        ],
         clean_dep("//tensorflow:windows"): [
             clean_dep(
                 "//tensorflow/python:_pywrap_tensorflow_internal_windows",
@@ -699,12 +667,6 @@ def tf_binary_pybind_deps():
 # Helper function for the per-OS tensorflow libraries and their version symlinks
 def tf_shared_library_deps():
     return select({
-        clean_dep("//tensorflow:macos_with_framework_shared_object"): [
-            clean_dep("//tensorflow:libtensorflow.dylib"),
-            clean_dep("//tensorflow:libtensorflow.%s.dylib" % VERSION_MAJOR),
-            clean_dep("//tensorflow:libtensorflow.%s.dylib" % VERSION),
-        ],
-        clean_dep("//tensorflow:macos"): [],
         clean_dep("//tensorflow:windows"): [
             clean_dep("//tensorflow:tensorflow.dll"),
             clean_dep("//tensorflow:tensorflow_dll_import_lib"),
@@ -742,11 +704,9 @@ def tf_binary_dynamic_kernel_deps(kernels):
 # TODO(pcloudy): Remove this workaround when https://github.com/bazelbuild/bazel/issues/4570
 # is done and cc_shared_library is available.
 SHARED_LIBRARY_NAME_PATTERN_LINUX = "lib%s.so%s"
-SHARED_LIBRARY_NAME_PATTERN_MACOS = "lib%s%s.dylib"
 SHARED_LIBRARY_NAME_PATTERN_WINDOWS = "%s%s.dll"
 SHARED_LIBRARY_NAME_PATTERNS = [
     SHARED_LIBRARY_NAME_PATTERN_LINUX,
-    SHARED_LIBRARY_NAME_PATTERN_MACOS,
     SHARED_LIBRARY_NAME_PATTERN_WINDOWS,
 ]
 
@@ -824,12 +784,6 @@ def tf_cc_shared_object(
             linkshared = 1,
             data = data + data_extra,
             linkopts = linkopts + _rpath_linkopts(name_os_full) + select({
-                clean_dep("//tensorflow:ios"): [
-                    "-Wl,-install_name,@rpath/" + soname,
-                ],
-                clean_dep("//tensorflow:macos"): [
-                    "-Wl,-install_name,@rpath/" + soname,
-                ],
                 clean_dep("//tensorflow:windows"): [],
                 "//conditions:default": [
                     "-Wl,-soname," + soname,
@@ -846,7 +800,6 @@ def tf_cc_shared_object(
             name = name,
             srcs = select({
                 clean_dep("//tensorflow:windows"): [":%s.dll" % (name)],
-                clean_dep("//tensorflow:macos"): [":lib%s%s.dylib" % (name, longsuffix)],
                 "//conditions:default": [":lib%s.so%s" % (name, longsuffix)],
             }),
             visibility = visibility,
@@ -881,12 +834,6 @@ def tf_cc_shared_library_opensource(
     for name_os, name_os_major, name_os_full in names:
         soname = name_os_full.split("/")[-1]
         user_link_flags = linkopts + _rpath_user_link_flags(name_os_full) + select({
-            clean_dep("//tensorflow:ios"): [
-                "-Wl,-install_name,@rpath/" + soname,
-            ],
-            clean_dep("//tensorflow:macos"): [
-                "-Wl,-install_name,@rpath/" + soname,
-            ],
             clean_dep("//tensorflow:windows"): [],
             "//conditions:default": [
                 "-Wl,-soname," + soname,
@@ -926,7 +873,6 @@ def tf_cc_shared_library_opensource(
             name = name,
             srcs = select({
                 clean_dep("//tensorflow:windows"): [":%s" % get_versioned_shared_library_name_windows(name, soversion)],
-                clean_dep("//tensorflow:macos"): [":%s" % get_versioned_shared_library_name_macos(name, soversion)],
                 "//conditions:default": [":%s" % get_versioned_shared_library_name_linux(name, soversion)],
             }),
             visibility = visibility,
@@ -984,7 +930,6 @@ def _get_shared_library_name_os_version_matrix(name, per_os_targets = False, ver
     if per_os_targets:
         names = [
             (get_versioned_shared_library_name_linux(name), get_versioned_shared_library_name_linux(name, version, True), get_versioned_shared_library_name_linux(name, version)),
-            (get_versioned_shared_library_name_macos(name), get_versioned_shared_library_name_macos(name, version, True), get_versioned_shared_library_name_macos(name, version)),
             (get_versioned_shared_library_name_windows(name), get_versioned_shared_library_name_windows(name, version, True), get_versioned_shared_library_name_windows(name, version)),
         ]
     else:
@@ -1074,7 +1019,6 @@ def tf_cc_binary(
             name = name,
             srcs = select({
                 "//tensorflow:windows": [":%s.dll" % name],
-                "//tensorflow:macos": [":lib%s.dylib" % name],
                 "//conditions:default": [":lib%s.so" % name],
             }),
             visibility = visibility,
@@ -1098,9 +1042,6 @@ def tf_native_cc_binary(
         copts = copts,
         linkopts = select({
             clean_dep("//tensorflow:windows"): [],
-            clean_dep("//tensorflow:macos"): [
-                "-lm",
-            ],
             "//conditions:default": [
                 "-lpthread",
                 "-lm",
@@ -1534,9 +1475,6 @@ def tf_cc_test(
                 "-pie",
             ],
             clean_dep("//tensorflow:windows"): [],
-            clean_dep("//tensorflow:macos"): [
-                "-lm",
-            ],
             "//conditions:default": [
                 "-lpthread",
                 "-lm",
@@ -1577,9 +1515,6 @@ def tf_cc_shared_test(
                 "-pie",
             ],
             clean_dep("//tensorflow:windows"): [],
-            clean_dep("//tensorflow:macos"): [
-                "-lm",
-            ],
             "//conditions:default": [
                 "-lpthread",
                 "-lm",
@@ -1596,7 +1531,6 @@ def tf_cc_shared_test(
         ),
         dynamic_deps = if_static(
             extra_deps = [],
-            macos = ["//tensorflow:libtensorflow_framework.%s.dylib" % VERSION],
             otherwise = ["//tensorflow:libtensorflow_framework.so.%s" % VERSION],
         ),
         data = data + tf_binary_dynamic_kernel_dsos(),
@@ -1652,7 +1586,6 @@ def tf_gpu_cc_test(
         linkopts = linkopts,
         linkstatic = select({
             # TODO(allenl): Remove Mac static linking when Bazel 0.6 is out.
-            clean_dep("//tensorflow:macos"): 1,
             "@local_config_cuda//cuda:using_nvcc": 1,
             "@local_config_cuda//cuda:using_clang": 1,
             "//conditions:default": 0,
@@ -1680,7 +1613,6 @@ def tf_gpu_cc_test(
             linkopts = linkopts,
             linkstatic = select({
                 # TODO(allenl): Remove Mac static linking when Bazel 0.6 is out.
-                clean_dep("//tensorflow:macos"): 1,
                 "@local_config_cuda//cuda:using_nvcc": 1,
                 "@local_config_cuda//cuda:using_clang": 1,
                 "//conditions:default": 0,
@@ -2289,7 +2221,6 @@ def tf_custom_op_library(
                 "-lm",
             ],
             clean_dep("//tensorflow:windows"): [],
-            clean_dep("//tensorflow:macos"): [],
         }),
         **kwargs
     )
@@ -2392,26 +2323,18 @@ def pywrap_tensorflow_macro_opensource(
 
     if not version_script:
         version_script = select({
-            "//tensorflow:macos": clean_dep("//tensorflow:tf_exported_symbols.lds"),
             "//conditions:default": clean_dep("//tensorflow:tf_version_script.lds"),
         })
     vscriptname = name + "_versionscript"
     _append_init_to_versionscript(
         name = vscriptname,
         is_version_script = select({
-            "//tensorflow:macos": False,
             "//conditions:default": True,
         }),
         module_name = module_name,
         template_file = version_script,
     )
     extra_linkopts = select({
-        clean_dep("//tensorflow:macos"): [
-            # TODO: the -w suppresses a wall of harmless warnings about hidden typeinfo symbols
-            # not being exported.  There should be a better way to deal with this.
-            "-Wl,-w",
-            "-Wl,-exported_symbols_list,$(location %s.lds)" % vscriptname,
-        ],
         clean_dep("//tensorflow:windows"): [],
         "//conditions:default": [
             "-Wl,--version-script",
@@ -3108,12 +3031,6 @@ def pybind_extension_opensource(
             shared_lib_name = so_file,
             testonly = testonly,
             user_link_flags = linkopts + _rpath_user_link_flags(name) + select({
-                clean_dep("//tensorflow:macos"): [
-                    # TODO: the -w suppresses a wall of harmless warnings about hidden typeinfo symbols
-                    # not being exported.  There should be a better way to deal with this.
-                    "-Wl,-w",
-                    "-Wl,-exported_symbols_list,$(location %s)" % exported_symbols_file,
-                ],
                 clean_dep("//tensorflow:windows"): [],
                 "//conditions:default": [
                     "-Wl,--version-script",
@@ -3149,12 +3066,6 @@ def pybind_extension_opensource(
                 ],
             }),
             linkopts = linkopts + _rpath_linkopts(name) + select({
-                clean_dep("//tensorflow:macos"): [
-                    # TODO: the -w suppresses a wall of harmless warnings about hidden typeinfo symbols
-                    # not being exported.  There should be a better way to deal with this.
-                    "-Wl,-w",
-                    "-Wl,-exported_symbols_list,$(location %s)" % exported_symbols_file,
-                ],
                 clean_dep("//tensorflow:windows"): [],
                 "//conditions:default": [
                     "-Wl,--version-script",
@@ -3546,7 +3457,6 @@ def replace_with_portable_tf_lib_when_required(non_portable_tf_deps, use_lib_wit
 
     return select({
         "//tensorflow:android": [portable_tf_lib],
-        "//tensorflow:ios": [portable_tf_lib],
         "//tensorflow:elinux": [portable_tf_lib],
         "//conditions:default": non_portable_tf_deps,
     })
