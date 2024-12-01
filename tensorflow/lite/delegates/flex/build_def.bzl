@@ -3,8 +3,7 @@
 load(
     "//tensorflow:tensorflow.bzl",
     "clean_dep",
-    "if_android",
-    "if_ios",
+    "if_android",,
     "if_mobile",
     "tf_cc_binary",
     "tf_copts",
@@ -131,7 +130,7 @@ def tflite_flex_cc_library(
                 clean_dep("//tensorflow/core/kernels:portable_core_ops"),
                 clean_dep("//tensorflow/core/kernels:portable_extended_ops"),
             ]) + [CUSTOM_KERNEL_HEADER.header],
-            copts = tf_copts(android_optimization_level_override = None) + tf_opts_nortti_if_lite_protos() + if_ios(["-Os"]),
+            copts = tf_copts(android_optimization_level_override = None) + tf_opts_nortti_if_lite_protos(),
             compatible_with = compatible_with,
             defines = [
                 "SELECTIVE_REGISTRATION",
@@ -142,7 +141,7 @@ def tflite_flex_cc_library(
                 lite = ["TENSORFLOW_LITE_PROTOS"],
             ) + tf_defines_nortti_if_lite_protos(),
             features = tf_features_nomodules_if_mobile() + tf_features_nolayering_check_if_ios(),
-            linkopts = if_android(["-lz"]) + if_ios(["-lz"]),
+            linkopts = if_android(["-lz"]),
             includes = [
                 CUSTOM_KERNEL_HEADER.include_path,
             ],
@@ -180,9 +179,6 @@ def tflite_flex_cc_library(
             clean_dep("//tensorflow/lite/delegates/utils:simple_delegate"),
         ] + select({
             clean_dep("//tensorflow:android"): [
-                portable_tensorflow_lib,
-            ],
-            clean_dep("//tensorflow:ios"): [
                 portable_tensorflow_lib,
             ],
             clean_dep("//tensorflow:elinux"): [
@@ -233,9 +229,6 @@ def tflite_flex_shared_library(
     tflite_cc_shared_object(
         name = name,
         linkopts = select({
-            "//tensorflow:macos": [
-                "-Wl,-exported_symbols_list,$(location //tensorflow/lite/delegates/flex:exported_symbols.lds)",
-            ],
             "//tensorflow:windows": [],
             "//conditions:default": [
                 "-Wl,-z,defs",
@@ -298,7 +291,6 @@ def tflite_flex_jni_library(
             clean_dep("//tensorflow/lite/delegates/utils:simple_delegate"),
         ] + select({
             clean_dep("//tensorflow:android"): [],
-            clean_dep("//tensorflow:ios"): [],
             "//conditions:default": [
                 clean_dep("//tensorflow/core:lib"),
             ],

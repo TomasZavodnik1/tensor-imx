@@ -271,24 +271,6 @@ def if_chromiumos(a, otherwise = []):
         "//conditions:default": otherwise,
     })
 
-def if_macos(a, otherwise = []):
-    return select({
-        clean_dep("//tensorflow:macos"): a,
-        "//conditions:default": otherwise,
-    })
-
-def if_ios(a, otherwise = []):
-    return select({
-        clean_dep("//tensorflow:ios"): a,
-        "//conditions:default": otherwise,
-    })
-
-def if_ios_x86_64(a):
-    return select({
-        clean_dep("//tensorflow:ios_x86_64"): a,
-        "//conditions:default": [],
-    })
-
 def if_mobile(a):
     return select({
         clean_dep("//tensorflow:mobile"): a,

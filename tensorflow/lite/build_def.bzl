@@ -152,12 +152,6 @@ def tflite_linkopts_no_undefined():
     return if_oss(
         select({
             # macOS/iOS linker uses "--undefined error" instead of "--no-undefined".
-            "//tensorflow:ios": [
-                "-Wl,-undefined,error",
-            ],
-            "//tensorflow:macos": [
-                "-Wl,-undefined,error",
-            ],
             "//conditions:default": ["-Wl,--no-undefined"],
         }),
         select({
@@ -168,12 +162,6 @@ def tflite_linkopts_no_undefined():
             "//tools/cpp:asan_build": [],
             "//tools/cpp:msan_build": [],
             "//tools/cpp:tsan_build": [],
-            "//tensorflow:ios": [
-                "-Wl,-undefined,error",
-            ],
-            "//tensorflow:macos": [
-                "-Wl,-undefined,error",
-            ],
             "//conditions:default": ["-Wl,--no-undefined"],
         }),
     )
@@ -202,10 +190,6 @@ def tflite_jni_binary(
         local_defines = []):
     """Builds a jni binary for TFLite."""
     linkopts = linkopts + select({
-        clean_dep("//tensorflow:macos"): [
-            "-Wl,-exported_symbols_list,$(location {})".format(exported_symbols),
-            "-Wl,-install_name,@rpath/" + name,
-        ],
         clean_dep("//tensorflow:windows"): [],
         "//conditions:default": [
             "-Wl,--version-script,$(location {})".format(linkscript),

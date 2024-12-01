@@ -263,12 +263,6 @@ cc_library(
     srcs = ["gpu_plugin.cc"],
     hdrs = ["gpu_plugin.h"],
     copts = common_copts + select({
-        "//tensorflow:ios": [
-            "-xobjective-c++",
-        ],
-        "//tensorflow:macos_arm64": [
-            "-xobjective-c++",
-        ],
         "//conditions:default": [],
     }),
     visibility = [
@@ -288,12 +282,6 @@ cc_library(
         ],
         "//conditions:default": [],
     }) + select({
-        "//tensorflow:ios": [
-            "//tensorflow/lite/delegates/gpu:metal_delegate",
-        ],
-        "//tensorflow:macos_arm64": [
-            "//tensorflow/lite/delegates/gpu:metal_delegate",
-        ],
         "//conditions:default": [],
     }),
     alwayslink = 1,  # For registration to always run.
@@ -355,13 +343,7 @@ cc_library(
         "//tensorflow/lite:minimal_logging",
         "//tensorflow/lite/core/acceleration/configuration:delegate_registry",
         "@com_google_absl//absl/memory",
-    ] + select({
-        "//tensorflow:macos": [
-            "//tensorflow/lite/delegates/coreml:coreml_delegate",
-        ],
-        "//tensorflow:ios": [
-            "//tensorflow/lite/delegates/coreml:coreml_delegate",
-        ],
+    ] + select([
         "//conditions:default": [],
     }),
     alwayslink = 1,  # For registration to always run.
