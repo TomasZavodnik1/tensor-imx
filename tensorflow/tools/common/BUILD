@@ -24,6 +24,7 @@ py_strict_test(
     name = "public_api_test",
     srcs = ["public_api_test.py"],
     data = select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.dylib"],
         "//tensorflow:windows": [],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION_MAJOR],
     }),
@@ -46,6 +47,7 @@ py_strict_test(
     name = "traverse_test",
     srcs = ["traverse_test.py"],
     data = select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.dylib"],
         "//tensorflow:windows": [],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION_MAJOR],
     }),

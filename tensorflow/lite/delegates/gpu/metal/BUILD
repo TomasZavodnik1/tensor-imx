@@ -1,4 +1,4 @@
-
+load("@build_bazel_rules_apple//apple:ios.bzl", "ios_application", "ios_unit_test")
 load(
     "//tensorflow/lite:special_rules.bzl",
     "tflite_ios_lab_runner",

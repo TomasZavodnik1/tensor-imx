@@ -1315,6 +1315,7 @@ tf_cc_tests(
         "variant_test.cc",
     ],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     visibility = [

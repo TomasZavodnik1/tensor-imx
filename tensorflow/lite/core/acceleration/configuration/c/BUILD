@@ -68,6 +68,12 @@ tflite_cc_library_with_c_headers_test(
     srcs = ["gpu_plugin.cc"],
     hdrs = ["gpu_plugin.h"],
     copts = common_copts + select({
+        "//tensorflow:ios": [
+            "-xobjective-c++",
+        ],
+        "//tensorflow:macos_arm64": [
+            "-xobjective-c++",
+        ],
         "//conditions:default": [],
     }),
     visibility = [
@@ -84,6 +90,12 @@ tflite_cc_library_with_c_headers_test(
         ],
         "//conditions:default": [],
     }) + select({
+        "//tensorflow:ios": [
+            "//tensorflow/lite/delegates/gpu:metal_delegate",
+        ],
+        "//tensorflow:macos_arm64": [
+            "//tensorflow/lite/delegates/gpu:metal_delegate",
+        ],
         "//conditions:default": [],
     }),
 )

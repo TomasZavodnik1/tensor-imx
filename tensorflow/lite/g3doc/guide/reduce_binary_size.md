@@ -223,6 +223,12 @@ tflite_custom_c_library(
 tflite_cc_shared_object(
     name = "tensorflowlite_c",
     linkopts = select({
+        "//tensorflow:ios": [
+            "-Wl,-exported_symbols_list,$(location //tensorflow/lite/c:exported_symbols.lds)",
+        ],
+        "//tensorflow:macos": [
+            "-Wl,-exported_symbols_list,$(location //tensorflow/lite/c:exported_symbols.lds)",
+        ],
         "//tensorflow:windows": [],
         "//conditions:default": [
             "-z defs",
@@ -284,6 +290,9 @@ tflite_cc_shared_object(
     # export all symbols.
     features = ["windows_export_all_symbols"],
     linkopts = select({
+        "//tensorflow:macos": [
+            "-Wl,-exported_symbols_list,$(location //tensorflow/lite:tflite_exported_symbols.lds)",
+        ],
         "//tensorflow:windows": [],
         "//conditions:default": [
             "-Wl,-z,defs",

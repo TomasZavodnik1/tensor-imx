@@ -415,6 +415,74 @@ config_setting(
 # "darwin_x86_64". The former shows up when building on a Mac x86_64 host for a Mac x86_64 target.
 # The latter shows up when cross-compiling for Mac x86_64 from a Mac ARM machine and in internal
 # Google builds.
+config_setting(
+    name = "macos_x86_64_default",
+    flag_values = if_google(
+        {"//tools/cpp:cc_target_os": "apple"},
+        {},
+    ),
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin",
+    },
+)
+
+config_setting(
+    name = "macos_x86_64_crosscompile",
+    flag_values = if_google(
+        {"//tools/cpp:cc_target_os": "apple"},
+        {},
+    ),
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin_x86_64",
+    },
+)
+
+selects.config_setting_group(
+    name = "macos_x86_64",
+    match_any = [
+        ":macos_x86_64_default",
+        ":macos_x86_64_crosscompile",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "macos_arm64",
+    flag_values = if_google(
+        {"//tools/cpp:cc_target_os": "apple"},
+        {},
+    ),
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin_arm64",
+    },
+    visibility = ["//visibility:public"],
+)
+
+# TODO(jakeharmon): Remove in favor of TSL version
+selects.config_setting_group(
+    name = "macos",
+    match_any = [
+        ":macos_x86_64",
+        ":macos_arm64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "ios",
+    flag_values = if_google(
+        {"//tools/cpp:cc_target_os": "apple"},
+        {},
+    ),
+    values = if_oss(
+        {"apple_platform_type": "ios"},
+        {},
+    ),
+    visibility = ["//visibility:public"],
+)
 
 # TODO(jakeharmon): Remove in favor of TSL version
 config_setting(
@@ -443,6 +511,20 @@ config_setting(
     visibility = ["//visibility:public"],
 )
 
+config_setting(
+    name = "ios_x86_64",
+    flag_values = if_google(
+        {"//tools/cpp:cc_target_os": "apple"},
+        {},
+    ),
+    values = dict(
+        if_oss(
+            {"crosstool_top": "//tools/osx/crosstool:crosstool"},
+        ),
+        cpu = "ios_x86_64",
+    ),
+    visibility = ["//visibility:public"],
+)
 
 config_setting(
     name = "chromiumos",
@@ -639,6 +721,38 @@ config_setting(
     visibility = ["//visibility:public"],
 )
 
+config_setting(
+    name = "macos_x86_64_with_framework_shared_object",
+    define_values = {
+        "framework_shared_object": "true",
+    },
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin",
+    },
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "macos_arm64_with_framework_shared_object",
+    define_values = {
+        "framework_shared_object": "true",
+    },
+    values = {
+        "apple_platform_type": "macos",
+        "cpu": "darwin_arm64",
+    },
+    visibility = ["//visibility:public"],
+)
+
+selects.config_setting_group(
+    name = "macos_with_framework_shared_object",
+    match_any = [
+        ":macos_x86_64_with_framework_shared_object",
+        ":macos_arm64_with_framework_shared_object",
+    ],
+)
+
 # Config setting that is satisfied when TensorFlow is being built with CUDA
 # support through e.g. `--config=cuda` (or `--config=cuda_clang` in OSS).
 alias(
@@ -792,6 +906,7 @@ selects.config_setting_group(
         # TODO(jakeharmon): Move all platform configs to TSL with fuchsia (non-blocking)
         ":fuchsia",
         ":emscripten",
+        ":ios",
         ":elinux"
     ],
     visibility = ["//visibility:public"],
@@ -1060,6 +1175,10 @@ tf_cc_shared_library(
     ],
     framework_so = [],
     linkopts = select({
+        "//tensorflow:macos": [
+            "-Wl,-rename_section,__TEXT,text_env,__TEXT,__text",
+            "-Wl,-unexported_symbols_list,$(location //tensorflow:tf_private_symbols.lds)",
+        ],
         "//tensorflow:windows": [],
         "//tensorflow:freebsd": [
             "-Wl,--version-script,$(location //tensorflow:tf_framework_version_script.lds)",
@@ -1102,6 +1221,7 @@ tf_cc_shared_library(
             ] + tf_additional_binary_deps() +
             # TODO(b/259305727): Remove this select and include captured_function in macos builds.
             select({
+                "//tensorflow:macos": [],
                 "//conditions:default": [
                     "//tensorflow/core/data:captured_function",
                 ],
@@ -1118,6 +1238,7 @@ tf_cc_shared_library(
 cc_import(
     name = "libtensorflow_framework_import_lib",
     shared_library = select({
+        "//tensorflow:macos": ":libtensorflow_framework.dylib",
         "//conditions:default": ":libtensorflow_framework.so.%s" % VERSION_MAJOR,
     }),
     visibility = ["//visibility:public"],
@@ -1140,6 +1261,9 @@ cc_import(
 tf_cc_shared_object(
     name = "tensorflow",
     linkopts = select({
+        "//tensorflow:macos": [
+            "-Wl,-exported_symbols_list,$(location //tensorflow/c:exported_symbols.lds)",
+        ],
         "//tensorflow:windows": [
         ],
         # copybara:uncomment_begin(google-only)
@@ -1190,6 +1314,7 @@ tf_cc_shared_library(
         "//tensorflow:tf_version_script.lds",
     ],
     dynamic_deps = select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.%s.dylib" % VERSION],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION],
     }),
     exports_filter = [
@@ -1197,6 +1322,9 @@ tf_cc_shared_library(
     ],
     framework_so = [],
     linkopts = select({
+        "//tensorflow:macos": [
+            "-Wl,-exported_symbols_list,$(location //tensorflow:tf_exported_symbols.lds)",
+        ],
         "//tensorflow:windows": [],
         "//conditions:default": [
             "-z defs",

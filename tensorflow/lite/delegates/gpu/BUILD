@@ -1,7 +1,8 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("//tensorflow/lite:special_rules.bzl", "tflite_extra_gles_deps")
 load("//tensorflow/lite/delegates/gpu:build_defs.bzl", "gpu_delegate_linkopts")
-
+load("@build_bazel_rules_apple//apple:ios.bzl", "ios_static_framework")
+load("@build_bazel_rules_apple//apple:macos.bzl", "macos_dylib")
 
 package(
     # copybara:uncomment default_applicable_licenses = ["//tensorflow:license"],

@@ -440,6 +440,7 @@ tf_python_pybind_extension(
     name = "_pywrap_tfcompile",
     srcs = ["tfcompile_wrapper.cc"],
     dynamic_deps = [":_pywrap_tensorflow_internal.so"] + select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.%s.dylib" % VERSION],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION],
         "//tensorflow:windows": [],
     }),
@@ -481,6 +482,7 @@ tf_python_pybind_extension(
     name = "_pywrap_py_exception_registry",
     srcs = ["py_exception_registry_wrapper.cc"],
     dynamic_deps = [":_pywrap_tensorflow_internal.so"] + select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.%s.dylib" % VERSION],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION],
         "//tensorflow:windows": [],
     }),
@@ -937,6 +939,12 @@ cc_import(
 )
 
 cc_import(
+    name = "_pywrap_tensorflow_internal_macos",
+    shared_library = "//tensorflow/python:lib_pywrap_tensorflow_internal.dylib",
+    visibility = tf_external_workspace_visible(visibility),
+)
+
+cc_import(
     name = "_pywrap_tensorflow_internal_windows",
     interface_library = "//tensorflow/python:pywrap_tensorflow_import_lib_file",
     shared_library = "//tensorflow/python:_pywrap_tensorflow_internal.dll",
@@ -1097,6 +1105,7 @@ tf_python_pybind_extension(
         "//tensorflow/tsl/python/lib/core:numpy_hdr",
     ],
     dynamic_deps = [":_pywrap_tensorflow_internal.so"] + select({
+        "//tensorflow:macos": ["//tensorflow:libtensorflow_framework.%s.dylib" % VERSION],
         "//conditions:default": ["//tensorflow:libtensorflow_framework.so.%s" % VERSION],
         "//tensorflow:windows": [],
     }),

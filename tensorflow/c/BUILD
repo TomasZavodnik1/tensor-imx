@@ -937,6 +937,7 @@ tf_cuda_cc_test(
         "//tensorflow/cc/saved_model:saved_model_half_plus_two",
     ],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     tags = [
@@ -993,6 +994,7 @@ tf_cc_test(
     ],
     extra_copts = if_google(["-DTENSORFLOW_NO_SHARED_OBJECTS=1"]),
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     # We must ensure that the dependencies can be dynamically linked since
@@ -1063,6 +1065,7 @@ tf_cuda_cc_test(
     size = "medium",
     srcs = ["env_test.cc"],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     # We must ensure that the dependencies can be dynamically linked since
@@ -1081,6 +1084,7 @@ tf_cuda_cc_test(
     size = "medium",
     srcs = ["kernels_test.cc"],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     tags = ["no_cuda_on_cpu_tap"],

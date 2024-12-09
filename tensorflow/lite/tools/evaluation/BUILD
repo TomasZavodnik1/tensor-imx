@@ -44,6 +44,12 @@ cc_library_with_stable_tflite_abi(
     non_stable_abi_deps = [
         "//tensorflow/lite/delegates/nnapi:nnapi_delegate",
     ] + select({
+        "//tensorflow:ios": [
+            "//tensorflow/lite/delegates/coreml:coreml_delegate",
+        ],
+        "//tensorflow:macos_arm64": [
+            "//tensorflow/lite/delegates/coreml:coreml_delegate",
+        ],
         "//conditions:default": [],
     }) + select({
         "//tensorflow/lite/delegates/gpu:supports_gpu_delegate": [

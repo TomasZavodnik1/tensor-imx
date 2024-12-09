@@ -728,6 +728,7 @@ tf_kernel_library(
     # and f2c helper functions in global namespace. Tell the compiler to
     # allow multiple definitions when linking this.
     linkopts = select({
+        "//tensorflow:macos": [],
         "//tensorflow:windows": [],
         "//conditions:default": ["-Wl,-z,muldefs"],
     }),
@@ -887,6 +888,7 @@ tf_cc_tests(
         "work_sharder_test.cc",
     ],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     visibility = [
@@ -930,6 +932,7 @@ tf_cc_test(
     size = "small",
     srcs = ["debug_events_writer_test.cc"],
     linkopts = select({
+        "//tensorflow:macos": ["-headerpad_max_install_names"],
         "//conditions:default": [],
     }),
     deps = [

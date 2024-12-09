@@ -828,11 +828,34 @@ def _tf_repositories():
         urls = tf_mirror_urls("https://github.com/bazelbuild/rules_android/archive/v0.1.1.zip"),
     )
 
+    # Apple and Swift rules.
+    # https://github.com/bazelbuild/rules_apple/releases
+    tf_http_archive(
+        name = "build_bazel_rules_apple",
+        sha256 = "a6141240657093fa7ccc7ca1ee5a62408dd9996d1bf47bc2369b8b9faefb2698",
+        urls = tf_mirror_urls("https://github.com/bazelbuild/rules_apple/releases/download/2.3.0/rules_apple.2.3.0.tar.gz"),
+    )
+
     # https://github.com/bazelbuild/rules_swift/releases
     tf_http_archive(
         name = "build_bazel_rules_swift",
         sha256 = "12057b7aa904467284eee640de5e33853e51d8e31aae50b3fb25d2823d51c6b8",
         urls = tf_mirror_urls("https://github.com/bazelbuild/rules_swift/releases/download/1.0.0/rules_swift.1.0.0.tar.gz"),
+    )
+
+    # https://github.com/bazelbuild/apple_support/releases
+    tf_http_archive(
+        name = "build_bazel_apple_support",
+        sha256 = "9f7bb62c3ae889e0eae8c18458fd8764e2e537687d9a1d85885d6af980e4fc31",
+        urls = tf_mirror_urls("https://github.com/bazelbuild/apple_support/releases/download/1.6.0/apple_support.1.6.0.tar.gz"),
+    )
+
+    # https://github.com/apple/swift-protobuf/releases
+    tf_http_archive(
+        name = "com_github_apple_swift_swift_protobuf",
+        strip_prefix = "swift-protobuf-1.19.0/",
+        sha256 = "f057930b9dbd17abeaaceaa45e9f8b3e87188c05211710563d2311b9edf490aa",
+        urls = tf_mirror_urls("https://github.com/apple/swift-protobuf/archive/1.19.0.tar.gz"),
     )
 
     tf_http_archive(
