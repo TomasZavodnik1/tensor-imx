@@ -50,19 +50,6 @@ NCCL_LIB_PATHS = [
     'lib64/', 'lib/powerpc64le-linux-gnu/', 'lib/x86_64-linux-gnu/', ''
 ]
 
-# List of files to configure when building Bazel on Apple platforms.
-APPLE_BAZEL_FILES = [
-    'tensorflow/lite/ios/BUILD', 'tensorflow/lite/objc/BUILD',
-    'tensorflow/lite/swift/BUILD',
-    'tensorflow/lite/tools/benchmark/experimental/ios/BUILD'
-]
-
-# List of files to move when building for iOS.
-IOS_FILES = [
-    'tensorflow/lite/objc/TensorFlowLiteObjC.podspec',
-    'tensorflow/lite/swift/TensorFlowLiteSwift.podspec',
-]
-
 
 class UserInputError(Exception):
   pass
@@ -74,11 +61,6 @@ def is_windows():
 
 def is_linux():
   return platform.system() == 'Linux'
-
-
-def is_macos():
-  return platform.system() == 'Darwin'
-
 
 def is_ppc64le():
   return platform.machine() == 'ppc64le'
@@ -635,8 +617,6 @@ def create_android_ndk_rule(environ_cp):
   if is_windows() or is_cygwin():
     default_ndk_path = cygpath('%s/Android/Sdk/ndk-bundle' %
                                environ_cp['APPDATA'])
-  elif is_macos():
-    default_ndk_path = '%s/library/Android/Sdk/ndk-bundle' % environ_cp['HOME']
   else:
     default_ndk_path = '%s/Android/Sdk/ndk-bundle' % environ_cp['HOME']
 
@@ -662,8 +642,6 @@ def create_android_sdk_rule(environ_cp):
   """Set Android variables and write Android SDK WORKSPACE rule."""
   if is_windows() or is_cygwin():
     default_sdk_path = cygpath('%s/Android/Sdk' % environ_cp['APPDATA'])
-  elif is_macos():
-    default_sdk_path = '%s/library/Android/Sdk' % environ_cp['HOME']
   else:
     default_sdk_path = '%s/Android/Sdk' % environ_cp['HOME']
 
@@ -1081,8 +1059,6 @@ def system_specific_test_config(environ_cp):
       test_and_build_filters += ['-no_windows_gpu', '-no_gpu']
     else:
       test_and_build_filters.append('-gpu')
-  elif is_macos():
-    test_and_build_filters += ['-gpu', '-nomac', '-no_mac', '-mac_excluded']
   elif is_linux():
     if ((environ_cp.get('TF_NEED_CUDA', None) == '1') or
         (environ_cp.get('TF_NEED_ROCM', None) == '1')):
@@ -1149,23 +1125,6 @@ def set_windows_build_flags(environ_cp):
 def config_info_line(name, help_text):
   """Helper function to print formatted help text for Bazel config options."""
   print('\t--config=%-12s\t# %s' % (name, help_text))
-
-
-def configure_ios(environ_cp):
-  """Configures TensorFlow for iOS builds."""
-  if not is_macos():
-    return
-  if not get_var(environ_cp, 'TF_CONFIGURE_IOS', 'iOS', False):
-    return
-  for filepath in APPLE_BAZEL_FILES:
-    existing_filepath = os.path.join(_TF_WORKSPACE_ROOT, filepath + '.apple')
-    renamed_filepath = os.path.join(_TF_WORKSPACE_ROOT, filepath)
-    symlink_force(existing_filepath, renamed_filepath)
-  for filepath in IOS_FILES:
-    filename = os.path.basename(filepath)
-    new_filepath = os.path.join(_TF_WORKSPACE_ROOT, filename)
-    symlink_force(filepath, new_filepath)
-
 
 def validate_cuda_config(environ_cp):
   """Run find_cuda_config.py and return cuda_toolkit_path, or None."""
@@ -1284,8 +1243,6 @@ def main():
     environ_cp['TF_DOWNLOAD_CLANG'] = '0'
     environ_cp['TF_NEED_MPI'] = '0'
 
-  if is_macos():
-    environ_cp['TF_NEED_TENSORRT'] = '0'
 
   if is_ppc64le():
     # Enable MMA Dynamic Dispatch support if 'gcc' and if linker >= 2.35
@@ -1440,8 +1397,6 @@ def main():
     create_android_sdk_rule(environ_cp)
 
   system_specific_test_config(environ_cp)
-
-  configure_ios(environ_cp)
 
   print('Preconfigured Bazel build configs. You can use any of the below by '
         'adding "--config=<>" to your build command. See .bazelrc for more '
