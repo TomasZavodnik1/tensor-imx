@@ -804,7 +804,7 @@ def set_clang_compiler_path(environ_cp):
   # Default path if clang-16 is installed by using apt-get install
   default_clang_path = '/usr/lib/llvm-16/bin/clang'
   if not os.path.exists(default_clang_path):
-    default_clang_path = which('clang') or ''
+    default_clang_path = "/build/source/clang"
 
   clang_compiler_path = prompt_loop_or_load_from_env(
       environ_cp,

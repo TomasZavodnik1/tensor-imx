@@ -1,0 +1,2 @@
+#!/nix/store/n9ps1jfg59kx2pyvrsbs3hxvnrd64jng-bash-aarch64-unknown-linux-gnu-5.2p26/bin/bash
+/nix/store/ymn1j7b2bckwf5vijq87vi3cjh6avl1h-clang-wrapper-17.0.6/bin/clang -isystem /nix/store/jj3k8jssr0cv34r8avszr77ls8xpl7sq-libcxx-17.0.6-dev/include/c++/v1 $*
