@@ -106,6 +106,8 @@ toolchain {
   compiler_flag: "-fno-use-init-array"
   compiler_flag: "-funsigned-char"
   compiler_flag: "-gmlt"
+  compiler_flag: "-stdlib=libc++"
+
   cxx_flag: "-Wno-deprecated"
   cxx_flag: "-Wno-invalid-offsetof"  # Needed for protobuf code (2017-11-07)
   cxx_flag: "-fshow-overloads=best"
