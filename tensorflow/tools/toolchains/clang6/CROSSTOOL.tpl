@@ -71,7 +71,6 @@ toolchain {
   # it enabled by default.
   compiler_flag: "-U_FORTIFY_SOURCE"
   compiler_flag: "-D_FORTIFY_SOURCE=1"
-  compiler_flag: "-isystem /nix/store/jj3k8jssr0cv34r8avszr77ls8xpl7sq-libcxx-17.0.6-dev/include/c++/v1"
   compiler_flag: "-fstack-protector"
   linker_flag: "-Wl,-z,relro,-z,now"
 
