@@ -22,18 +22,18 @@ get_dependency_tag("vulkan_headers" "${TF_SOURCE_DIR}/../third_party/vulkan_head
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   vulkan_headers
-  GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
-  GIT_TAG ${VULKAN_HEADERS_TAG}
-  GIT_PROGRESS TRUE
-  PREFIX "${CMAKE_BINARY_DIR}"
+  #GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
+  #GIT_TAG ${VULKAN_HEADERS_TAG}
+  #GIT_PROGRESS TRUE
+  #PREFIX "${CMAKE_BINARY_DIR}"
   SOURCE_DIR "${CMAKE_BINARY_DIR}/vulkan_headers"
 )
 
-OverridableFetchContent_GetProperties(vulkan_headers)
+FetchContent_GetProperties(vulkan_headers)
 if(NOT vulkan_headers)
-  OverridableFetchContent_Populate(vulkan_headers)
+  FetchContent_Populate(vulkan_headers)
 endif()
 
 include_directories(

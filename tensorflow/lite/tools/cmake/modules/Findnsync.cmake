@@ -19,17 +19,17 @@ endif()
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   nsync
-  GIT_REPOSITORY https://github.com/google/nsync.git
-  GIT_TAG 1.22.0
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/nsync"
+  #GIT_REPOSITORY https://github.com/google/nsync.git
+  #GIT_TAG 1.22.0
+  #GIT_SHALLOW TRUE
+  #GIT_PROGRESS TRUE
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/nsync"
 )
-OverridableFetchContent_GetProperties(nsync)
+FetchContent_GetProperties(nsync)
 if(NOT nsync_POPULATED)
-  OverridableFetchContent_Populate(nsync)
+  FetchContent_Populate(nsync)
 endif()
 
 option(NSYNC_ENABLE_TESTS OFF)

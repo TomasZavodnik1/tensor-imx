@@ -26,24 +26,24 @@ if(NOT TF_SOURCE_DIR)
 endif()
 
 include(utils)
-get_dependency_archive("flatbuffers" "${TF_SOURCE_DIR}/../third_party/flatbuffers/workspace.bzl" FLATBUFFERS_URL FLATBUFFERS_CHECKSUM)
+#get_dependency_archive("flatbuffers" "${TF_SOURCE_DIR}/../third_party/flatbuffers/workspace.bzl" FLATBUFFERS_URL FLATBUFFERS_CHECKSUM)
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   flatbuffers
-  GIT_TAG v23.5.26
-  URL ${FLATBUFFERS_URL}
-  URL_HASH SHA256=${FLATBUFFERS_CHECKSUM}
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  LICENSE_FILE "LICENSE"
-  LICENSE_URL ${FLATBUFFERS_URL}
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/flatbuffers"
+  #GIT_TAG v23.5.26
+  #URL ${FLATBUFFERS_URL}
+  #URL_HASH SHA256=${FLATBUFFERS_CHECKSUM}
+  #GIT_SHALLOW TRUE
+  #GIT_PROGRESS TRUE
+  #LICENSE_FILE "LICENSE"
+  #LICENSE_URL ${FLATBUFFERS_URL}
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/flatbuffers"
 )
 
-OverridableFetchContent_GetProperties(flatbuffers)
+FetchContent_GetProperties(flatbuffers)
 if(NOT flatbuffers_POPULATED)
-  OverridableFetchContent_Populate(flatbuffers)
+  FetchContent_Populate(flatbuffers)
 endif()
 
 option(FLATBUFFERS_BUILD_TESTS OFF)

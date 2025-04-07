@@ -18,21 +18,21 @@ if(TARGET fft2d OR fft2d_POPULATED)
 endif()
 
 include(utils)
-get_dependency_archive("fft2d" "${TF_SOURCE_DIR}/workspace2.bzl" FFT2D_URL FFT2D_CHECKSUM)
+#get_dependency_archive("fft2d" "${TF_SOURCE_DIR}/workspace2.bzl" FFT2D_URL FFT2D_CHECKSUM)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   fft2d
-  URL ${FFT2D_URL}
-  URL_HASH SHA256=${FFT2D_CHECKSUM}
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/fft2d"
-  LICENSE_FILE "readme2d.txt"
-  LICENSE_URL "http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html"
+  #URL ${FFT2D_URL}
+  #URL_HASH SHA256=${FFT2D_CHECKSUM}
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/fft2d"
+  #LICENSE_FILE "readme2d.txt"
+  #LICENSE_URL "http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html"
 )
-OverridableFetchContent_GetProperties(fft2d)
+FetchContent_GetProperties(fft2d)
 if(NOT fft2d_POPULATED)
-  OverridableFetchContent_Populate(fft2d)
+  FetchContent_Populate(fft2d)
 endif()
 
 set(FFT2D_SOURCE_DIR "${fft2d_SOURCE_DIR}" CACHE PATH "fft2d source")

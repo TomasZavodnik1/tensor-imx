@@ -19,21 +19,21 @@ if(TARGET protobuf OR protobuf_POPULATED)
   return()
 endif()
 
-set(PROTOBUF_SRC_DIR "${CMAKE_BINARY_DIR}/protobuf")
+set(PROTOBUF_SRC_DIR "${TF_SOURCE_DIR}/lite/builds/protobuf")
 
 OverridableFetchContent_Declare(
   protobuf
-  GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
+  #GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
   # Sync with tensorflow/third_party/flatbuffers/workspace.bzl
-  GIT_TAG v3.21.9
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  SOURCE_DIR ${PROTOBUF_SRC_DIR}
+  #GIT_TAG v3.21.9
+  #GIT_SHALLOW TRUE
+  #GIT_PROGRESS TRUE
+  SOURCE_DIR ${TF_SOURCE_DIR}/lite/builds/protobuf
 )
 
-OverridableFetchContent_GetProperties(protobuf)
+FetchContent_GetProperties(protobuf)
 if(NOT protobuf_POPULATED)
-  message(STATUS "Cloning https://github.com/protocolbuffers/protobuf...")
-  OverridableFetchContent_Populate(protobuf)
-  add_subdirectory("${PROTOBUF_SRC_DIR}/cmake" "${CMAKE_BINARY_DIR}/protobuf-protoc")
+  #message(STATUS "Cloning https://github.com/protocolbuffers/protobuf...")
+  FetchContent_Populate(protobuf)
+  add_subdirectory("${TF_SOURCE_DIR}/lite/builds/protobuf/cmake" "${CMAKE_BINARY_DIR}/protobuf-protoc")
 endif()

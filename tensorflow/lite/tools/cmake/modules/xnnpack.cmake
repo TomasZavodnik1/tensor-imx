@@ -18,21 +18,21 @@ if(TARGET xnnpack OR xnnpack_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("xnnpack" "${TF_SOURCE_DIR}/workspace2.bzl" XNNPACK_TAG)
+#get_dependency_tag("xnnpack" "${TF_SOURCE_DIR}/workspace2.bzl" XNNPACK_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   xnnpack
-  GIT_REPOSITORY https://github.com/google/XNNPACK
-  GIT_TAG ${XNNPACK_TAG}
-  GIT_PROGRESS TRUE
-  PREFIX "${CMAKE_BINARY_DIR}"
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/xnnpack"
+  #GIT_REPOSITORY https://github.com/google/XNNPACK
+  #GIT_TAG ${XNNPACK_TAG}
+  #GIT_PROGRESS TRUE
+  #PREFIX "${CMAKE_BINARY_DIR}"
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/xnnpack"
 )
-OverridableFetchContent_GetProperties(xnnpack)
+FetchContent_GetProperties(xnnpack)
 if(NOT xnnpack_POPULATED)
-  OverridableFetchContent_Populate(xnnpack)
+  FetchContent_Populate(xnnpack)
 endif()
 
 # May consider setting XNNPACK_USE_SYSTEM_LIBS if we want to control all

@@ -33,6 +33,11 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+set( CMAKE_SYSTEM_PROCESSOR aarch64 )
+set( CMAKE_SYSTEM_NAME Linux )
+message(STATUS, "asdasdasd")
+message(STATUS, "${CMAKE_BINARY_DIR}")
+
 # Double colon in target name means ALIAS or IMPORTED target.
 cmake_policy(SET CMP0028 NEW)
 # Enable MACOSX_RPATH (@rpath) for built dynamic libraries.

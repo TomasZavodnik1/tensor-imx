@@ -19,22 +19,23 @@ if(TARGET absl_base OR abseil-cpp_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("absl" "${TF_SOURCE_DIR}/../third_party/absl/workspace.bzl" ABSL_TAG)
+#get_dependency_tag("absl" "${TF_SOURCE_DIR}/../third_party/absl/workspace.bzl" ABSL_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   abseil-cpp
-  GIT_REPOSITORY https://github.com/abseil/abseil-cpp
-  GIT_TAG ${ABSL_TAG}
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  PREFIX "${CMAKE_BINARY_DIR}"
+  #GIT_REPOSITORY https://github.com/abseil/abseil-cpp
+  #GIT_TAG ${ABSL_TAG}
+  #GIT_SHALLOW TRUE
+  #GIT_PROGRESS TRUE
+  #PREFIX "${CMAKE_BINARY_DIR}"
   SOURCE_DIR "${CMAKE_BINARY_DIR}/abseil-cpp"
 )
-OverridableFetchContent_GetProperties(abseil-cpp)
+
+FetchContent_GetProperties(abseil-cpp)
 if(NOT abseil-cpp_POPULATED)
-  OverridableFetchContent_Populate(abseil-cpp)
+  FetchContent_Populate(abseil-cpp)
 endif()
 
 set(ABSL_USE_GOOGLETEST_HEAD OFF CACHE BOOL "Disable googletest")

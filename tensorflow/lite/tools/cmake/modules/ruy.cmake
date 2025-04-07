@@ -18,20 +18,20 @@ if(TARGET ruy OR ruy_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("ruy" "${TF_SOURCE_DIR}/../third_party/ruy/workspace.bzl" RUY_TAG)
+#get_dependency_tag("ruy" "${TF_SOURCE_DIR}/../third_party/ruy/workspace.bzl" RUY_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   ruy
-  GIT_REPOSITORY https://github.com/google/ruy
-  GIT_TAG ${RUY_TAG}
-  GIT_PROGRESS TRUE
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/ruy"
+  #GIT_REPOSITORY https://github.com/google/ruy
+  #GIT_TAG ${RUY_TAG}
+  #GIT_PROGRESS TRUE
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/ruy"
 )
-OverridableFetchContent_GetProperties(ruy)
+FetchContent_GetProperties(ruy)
 if(NOT ruy_POPULATED)
-  OverridableFetchContent_Populate(ruy)
+  FetchContent_Populate(ruy)
 endif()
 
 set(RUY_SOURCE_DIR "${ruy_SOURCE_DIR}" CACHE PATH "RUY source directory")

@@ -25,60 +25,60 @@ include(utils)
 # requiring the implementation below.
 set(REMOTE_CONF_FILE "https://raw.githubusercontent.com/google/XNNPACK/master/cmake/DownloadFP16.cmake")
 set(TEMP_CONF_PATH "${CMAKE_BINARY_DIR}/temp_DownloadFP16.cmake")
-file(DOWNLOAD ${REMOTE_CONF_FILE} ${TEMP_CONF_PATH})
+#file(DOWNLOAD ${REMOTE_CONF_FILE} ${TEMP_CONF_PATH})
 
 # Retrieve fp16_headers archive URL
-file(STRINGS ${TEMP_CONF_PATH}
-    URL_LINE
-    REGEX "^[ ]*URL[ ]+http[a-zA-Z0-9/.:_-]*$"
-    LIMIT_COUNT 1
-)
-if(NOT URL_LINE)
-    print_parse_error("fp16_headers" ${REMOTE_CONF_FILE} "URL")
-endif()
+#file(STRINGS ${TEMP_CONF_PATH}
+#    URL_LINE
+#    REGEX "^[ ]*URL[ ]+http[a-zA-Z0-9/.:_-]*$"
+#    LIMIT_COUNT 1
+#)
+#if(NOT URL_LINE)
+#    print_parse_error("fp16_headers" ${REMOTE_CONF_FILE} "URL")
+#endif()
 
-string(STRIP ${URL_LINE} URL_LINE)
+#string(STRIP ${URL_LINE} URL_LINE)
 
 # Retrieve dependency archive checksum
-file(STRINGS ${TEMP_CONF_PATH}
-    CHECKSUM_LINE
-    REGEX "^[ ]*URL_HASH[ ]+SHA256[ ]*=[ ]*[a-zA-Z0-9]*$"
-    LIMIT_COUNT 1
-)
+#file(STRINGS ${TEMP_CONF_PATH}
+#    CHECKSUM_LINE
+#    REGEX "^[ ]*URL_HASH[ ]+SHA256[ ]*=[ ]*[a-zA-Z0-9]*$"
+#    LIMIT_COUNT 1
+#)
 
-if(NOT CHECKSUM_LINE)
-    print_parse_error("fp16_headers" ${REMOTE_CONF_FILE} "URL_HASH SHA256")
-endif()
+#if(NOT CHECKSUM_LINE)
+#    print_parse_error("fp16_headers" ${REMOTE_CONF_FILE} "URL_HASH SHA256")
+#endif()
 
-string(STRIP ${CHECKSUM_LINE} CHECKSUM_LINE)
+#string(STRIP ${CHECKSUM_LINE} CHECKSUM_LINE)
 
 # Extract dependency archive URL value
-string(FIND ${URL_LINE} "http" URL_START)
-string(SUBSTRING ${URL_LINE} ${URL_START} -1 FP16_HEADERS_URL)
+#string(FIND ${URL_LINE} "http" URL_START)
+#string(SUBSTRING ${URL_LINE} ${URL_START} -1 FP16_HEADERS_URL)
 
 # Extract SHA-256 value
-string(FIND ${CHECKSUM_LINE} "=" EQUAL_POS)
-math(EXPR SHA256_START "${EQUAL_POS}+1")
-string(SUBSTRING ${CHECKSUM_LINE} ${SHA256_START} -1 FP16_HEADERS_CHECKSUM)
-check_sha_length("fp16_headers" ${REMOTE_CONF_FILE} "URL_HASH SHA256" ${FP16_HEADERS_CHECKSUM} 32)
+#string(FIND ${CHECKSUM_LINE} "=" EQUAL_POS)
+#math(EXPR SHA256_START "${EQUAL_POS}+1")
+#string(SUBSTRING ${CHECKSUM_LINE} ${SHA256_START} -1 FP16_HEADERS_CHECKSUM)
+#check_sha_length("fp16_headers" ${REMOTE_CONF_FILE} "URL_HASH SHA256" ${FP16_HEADERS_CHECKSUM} 32)
 
-file(REMOVE ${TEMP_CONF_PATH})
-message(STATUS "Cloning fp16_headers repository from ${FP16_HEADERS_URL}, found in ${REMOTE_CONF_FILE}...")
+#file(REMOVE ${TEMP_CONF_PATH})
+#message(STATUS "Cloning fp16_headers repository from ${FP16_HEADERS_URL}, found in ${REMOTE_CONF_FILE}...")
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   fp16_headers
   # Automatically synced with https://github.com/google/XNNPACK/blob/master/cmake/DownloadFP16.cmake
-  URL ${FP16_HEADERS_URL}
-  URL_HASH SHA256=${FP16_HEADERS_CHECKSUM}
-  PREFIX "${CMAKE_BINARY_DIR}"
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/fp16_headers"
+  #URL ${FP16_HEADERS_URL}
+  #URL_HASH SHA256=${FP16_HEADERS_CHECKSUM}
+  #PREFIX "${CMAKE_BINARY_DIR}"
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/fp16_headers"
 )
 
-OverridableFetchContent_GetProperties(fp16_headers)
+FetchContent_GetProperties(fp16_headers)
 if(NOT fp16_headers)
-  OverridableFetchContent_Populate(fp16_headers)
+  FetchContent_Populate(fp16_headers)
 endif()
 
 include_directories(

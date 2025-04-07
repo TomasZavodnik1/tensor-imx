@@ -18,22 +18,22 @@ if(TARGET opencl_headers OR opencl_headers_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("opencl_headers" "${TF_SOURCE_DIR}/../third_party/opencl_headers/workspace.bzl" OPENCL_HEADERS_TAG)
+#get_dependency_tag("opencl_headers" "${TF_SOURCE_DIR}/../third_party/opencl_headers/workspace.bzl" OPENCL_HEADERS_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   opencl_headers
-  GIT_REPOSITORY https://github.com/KhronosGroup/OpenCL-Headers
-  GIT_TAG ${OPENCL_HEADERS_TAG}
-  GIT_PROGRESS TRUE
-  PREFIX "${CMAKE_BINARY_DIR}"
+  #GIT_REPOSITORY https://github.com/KhronosGroup/OpenCL-Headers
+  #GIT_TAG ${OPENCL_HEADERS_TAG}
+  #GIT_PROGRESS TRUE
+  #PREFIX "${CMAKE_BINARY_DIR}"
   SOURCE_DIR "${CMAKE_BINARY_DIR}/opencl_headers"
 )
 
-OverridableFetchContent_GetProperties(opencl_headers)
+FetchContent_GetProperties(opencl_headers)
 if(NOT opencl_headers)
-  OverridableFetchContent_Populate(opencl_headers)
+  FetchContent_Populate(opencl_headers)
 endif()
 
 include_directories(

@@ -18,26 +18,26 @@ if(TARGET gemmlowp OR gemmlowp_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("gemmlowp" "${TF_SOURCE_DIR}/../third_party/gemmlowp/workspace.bzl" GEMMLOWP_TAG)
+#get_dependency_tag("gemmlowp" "${TF_SOURCE_DIR}/../third_party/gemmlowp/workspace.bzl" GEMMLOWP_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   gemmlowp
-  GIT_REPOSITORY https://github.com/google/gemmlowp
-  GIT_TAG ${GEMMLOWP_TAG}
+  #GIT_REPOSITORY https://github.com/google/gemmlowp
+  #GIT_TAG ${GEMMLOWP_TAG}
   # It's not currently (cmake 3.17) possible to shallow clone with a GIT TAG
   # as cmake attempts to git checkout the commit hash after the clone
   # which doesn't work as it's a shallow clone hence a different commit hash.
   # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
   # GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/gemmlowp"
+  #GIT_PROGRESS TRUE
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/gemmlowp"
 )
 
-OverridableFetchContent_GetProperties(gemmlowp)
+FetchContent_GetProperties(gemmlowp)
 if(NOT gemmlowp_POPULATED)
-  OverridableFetchContent_Populate(gemmlowp)
+  FetchContent_Populate(gemmlowp)
 endif()
 
 # gemmlowp creates a benchmark target if BUILD_TESTING is set,

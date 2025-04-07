@@ -18,20 +18,20 @@ if(TARGET cpuinfo OR cpuinfo_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("cpuinfo" "${TF_SOURCE_DIR}/workspace2.bzl" CPUINFO_TAG)
+#get_dependency_tag("cpuinfo" "${TF_SOURCE_DIR}/workspace2.bzl" CPUINFO_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   cpuinfo
-  GIT_REPOSITORY https://github.com/pytorch/cpuinfo
-  GIT_TAG ${CPUINFO_TAG}
-  GIT_PROGRESS TRUE
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/cpuinfo"
+  #GIT_REPOSITORY https://github.com/pytorch/cpuinfo
+  #GIT_TAG ${CPUINFO_TAG}
+  #GIT_PROGRESS TRUE
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/cpuinfo"
 )
-OverridableFetchContent_GetProperties(cpuinfo)
+FetchContent_GetProperties(cpuinfo)
 if(NOT cpuinfo_POPULATED)
-  OverridableFetchContent_Populate(cpuinfo)
+  FetchContent_Populate(cpuinfo)
 endif()
 
 set(CPUINFO_SOURCE_DIR "${cpuinfo_SOURCE_DIR}" CACHE PATH "CPUINFO source directory")

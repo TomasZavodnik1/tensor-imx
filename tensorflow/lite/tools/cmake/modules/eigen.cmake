@@ -18,27 +18,17 @@ if(TARGET eigen OR eigen_POPULATED)
 endif()
 
 include(utils)
-get_dependency_tag("eigen" "${TF_SOURCE_DIR}/../third_party/eigen3/workspace.bzl" EIGEN_TAG)
+#get_dependency_tag("eigen" "${TF_SOURCE_DIR}/../third_party/eigen3/workspace.bzl" EIGEN_TAG)
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   eigen
-  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG ${EIGEN_TAG}
-  # It's not currently (cmake 3.17) possible to shallow clone with a GIT TAG
-  # as cmake attempts to git checkout the commit hash after the clone
-  # which doesn't work as it's a shallow clone hence a different commit hash.
-  # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
-  # GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-  PREFIX "${CMAKE_BINARY_DIR}"
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/eigen"
-  LICENSE_FILE "COPYING.MPL2"
+  SOURCE_DIR "${TF_SOURCE_DIR}/lite/builds/eigen"
 )
-OverridableFetchContent_GetProperties(eigen)
+FetchContent_GetProperties(eigen)
 if(NOT eigen_POPULATED)
-  OverridableFetchContent_Populate(eigen)
+  FetchContent_Populate(eigen)
 endif()
 
 # Patch Eigen to disable Fortran compiler check for BLAS and LAPACK tests.

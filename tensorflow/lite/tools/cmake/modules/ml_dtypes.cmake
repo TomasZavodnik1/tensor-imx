@@ -19,22 +19,22 @@ endif()
 
 include(OverridableFetchContent)
 
-OverridableFetchContent_Declare(
+FetchContent_Declare(
   ml_dtypes
-  GIT_REPOSITORY https://github.com/jax-ml/ml_dtypes
+  #GIT_REPOSITORY https://github.com/jax-ml/ml_dtypes
   # Sync with tensorflow/third_party/py/ml_dtypes/workspace.bzl
-  GIT_TAG 5b9fc9ad978757654843f4a8d899715dbea30e88
+  #GIT_TAG 5b9fc9ad978757654843f4a8d899715dbea30e88
   # It's not currently possible to shallow clone with a GIT TAG
   # as cmake attempts to git checkout the commit hash after the clone
   # which doesn't work as it's a shallow clone hence a different commit hash.
   # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
   # GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
+  #GIT_PROGRESS TRUE
   SOURCE_DIR "${CMAKE_BINARY_DIR}/ml_dtypes"
 )
-OverridableFetchContent_GetProperties(ml_dtypes)
+FetchContent_GetProperties(ml_dtypes)
 if(NOT ml_dtypes_POPULATED)
-  OverridableFetchContent_Populate(ml_dtypes)
+  FetchContent_Populate(ml_dtypes)
 endif()
 
 set(ML_DTYPES_SOURCE_DIR "${ml_dtypes_SOURCE_DIR}" CACHE PATH
